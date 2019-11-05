@@ -14,7 +14,8 @@ nongreedyHaRegex = re.compile(r'(Ha){3,5}?')
 mo2 = nongreedyHaRegex.search('HaHaHaHaHa')
 print(mo2.group())
 # 问号在正则表达式中可能有两种含义:
-# 1. 声明非贪心匹配
+# 1. 声明非贪心匹配.
+#    默认为"贪心", "非贪心"需要在量词后加 '?': +? *? {m,n}?
 # 2. 表示可选的分组
 
 print('---------------------------------------')

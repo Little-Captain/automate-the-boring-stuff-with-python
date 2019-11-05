@@ -26,6 +26,14 @@ areaCode, mainNumber = match.groups()
 print(results)
 print(areaCode, mainNumber)
 
+# 注意 re.Match 对象的 group groups 方法返回值的不同
+# 1. group
+#    0, 不传: 返回匹配的整个文本
+#    n: 返回匹配的第 n 个分组
+# 2. groups
+#    返回所有分组组成的一个元组
+#    注意: 要想获得匹配的整个文本, 必须将整个正则表达式作为一个分组, 通过索引 0 获得
+
 print('-----------------------------------')
 
 # 用管道匹配多个分组
