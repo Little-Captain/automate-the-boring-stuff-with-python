@@ -9,8 +9,8 @@
 # 2. 条件（即求值为 True 或 False 的表达式）；
 # 3. 逗号；
 # 4. 当条件为 False 时显示的字符串。
-testStr = 'open1'
-assert testStr == 'open', 'assert false'
+# testStr = 'open1'
+# assert testStr == 'open', 'assert false'
 
 # 断言和异常的比较
 # 在日常英语中，assert 语句是说：“我断言这个条件为真，如果不为真，程序中什么地方就有一个缺陷。”
@@ -20,3 +20,29 @@ assert testStr == 'open', 'assert false'
 # 断言: 针对的是程序员的错误
 # 异常: 针对的是用户的错误
 # 对于那些可以恢复的错误，请抛出异常，而不是用 assert 语句检测它
+# 在程序执行中尽早快速失败，可以省去将来大量的调试工作。
+
+market_2nd = {'ns': 'green', 'ew': 'red'}
+mission_16th = {'ns': 'red', 'ew': 'green'}
+
+def switchLights(stoplight):
+    for key in stoplight.keys():
+        if stoplight[key] == 'green':
+            stoplight[key] = 'yellow'
+        elif stoplight[key] == 'yellow':
+            stoplight[key] = 'red'
+        elif stoplight[key] == 'red':
+            stoplight[key] = 'green'
+    assert 'red' in stoplight.values(), 'Neither light is red! ' + str(stoplight)
+
+print(market_2nd)
+switchLights(market_2nd)
+print(market_2nd)
+
+# 禁用断言
+# 在运行 Python 时传入 -O 选项，可以禁用断言
+# 如果你已完成了程序的编写和测试，不希望执行心智正常检测，从而减慢程序的速度，
+# 这样就很好（尽管大多数断言语句所花的时间，不会让你觉察到速度的差异）。
+# 断言是针对开发的，不是针对最终产品。当你将程序交给其他人运行时，它应该没有缺陷，
+# 不需要进行心智正常检查。
+# python -O 03.assert.py
