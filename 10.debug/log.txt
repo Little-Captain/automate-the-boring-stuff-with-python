@@ -7,3 +7,21 @@
  2019-11-14 13:04:44,078 - DEBUG - i is 5, total is 120
  2019-11-14 13:04:44,078 - DEBUG - End of factorial(5!)
  2019-11-14 13:04:44,078 - DEBUG - End of program
+ 2019-11-14 14:56:26,000 - DEBUG - Start of program
+ 2019-11-14 14:56:26,000 - DEBUG - Start of factorial(5!)
+ 2019-11-14 14:56:26,000 - DEBUG - i is 1, total is 1
+ 2019-11-14 14:56:26,000 - DEBUG - i is 2, total is 2
+ 2019-11-14 14:56:26,000 - DEBUG - i is 3, total is 6
+ 2019-11-14 14:56:26,003 - DEBUG - i is 4, total is 24
+ 2019-11-14 14:56:26,003 - DEBUG - i is 5, total is 120
+ 2019-11-14 14:56:26,003 - DEBUG - End of factorial(5!)
+ 2019-11-14 14:56:26,003 - DEBUG - End of program
+ 2019-11-14 15:04:01,130 - DEBUG - Start of program
+ 2019-11-14 15:04:01,130 - DEBUG - Start of factorial(5!)
+ 2019-11-14 15:04:01,130 - DEBUG - i is 1, total is 1
+ 2019-11-14 15:04:01,130 - DEBUG - i is 2, total is 2
+ 2019-11-14 15:04:01,130 - DEBUG - i is 3, total is 6
+ 2019-11-14 15:04:01,131 - DEBUG - i is 4, total is 24
+ 2019-11-14 15:04:01,131 - DEBUG - i is 5, total is 120
+ 2019-11-14 15:04:01,131 - DEBUG - End of factorial(5!)
+ 2019-11-14 15:04:01,132 - DEBUG - End of program
