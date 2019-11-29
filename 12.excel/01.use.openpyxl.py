@@ -117,3 +117,74 @@ pprint.pprint(rows[1])
 # 6．使用索引或工作表的 cell() 方法，带上 row 和 column 关键字参数
 # 7．取得 Cell 对象
 # 8．读取 Cell 对象的 value 属性
+
+print('-----------------------------')
+
+wb.close()
+
+# 写入 Excel 文档
+
+# 创建并保存 Excel 文档
+import openpyxl
+wb = openpyxl.Workbook()
+
+print(wb.sheetnames)
+print(wb.active)
+print(wb.active.title)
+wb.active.title = 'Spam Bacon Eggs Sheet'
+print(wb.active.title)
+
+# 当修改 Workbook 对象或它的工作表和单元格时，电子表格文件不会保存，
+# 除非你调用 save() 工作簿方法
+# wb.save('test.xlsx')
+
+# 当你编辑从文件中加载的一个电子表格时，总是应该将新的、编辑过的电子表格
+# 保存到不同的文件名中。这样，如果代码中有缺陷，导致新的保存到文件中数据
+# 不对或讹误，还有最初的电子表格文件可以处理。
+
+print('--------------------')
+
+# 创建和删除工作表
+# create_sheet() remove_sheet()
+wb = openpyxl.Workbook()
+print(wb.sheetnames)
+wb.create_sheet()
+print(wb.sheetnames)
+# create_sheet() 方法返回一个新的 Worksheet 对象，名为 SheetX，
+# 它默认是工作簿的最后一个工作表。或者，可以利用 index 和 title 关键字参数，
+# 指定新工作表的索引或名称
+wb.create_sheet(index=0, title='First Sheet')
+print(wb.sheetnames)
+wb.create_sheet(index=2, title='Middle Sheet')
+print(wb.sheetnames)
+del wb['Middle Sheet']
+print(wb.sheetnames)
+wb.remove(wb['Sheet1'])
+print(wb.sheetnames)
+# remove_sheet() 方法接受一个 Worksheet 对象作为其参数，而不是工作表名称的字符串
+# 如果你只知道要删除的工作表的名称，就调用 get_sheet_by_name()，将它的返回值传入
+# remove_sheet()
+
+# wb.save('test.xlsx')
+
+print('--------------------')
+
+# 将值写入单元格
+# 将值写入单元格，很像将值写入字典中的键
+# wb = openpyxl.load_workbook('test.xlsx')
+sheet = wb.active
+# 都能存入数据
+sheet['A1'] = 'Hello world!'
+sheet['A2'].value = 'Hello'
+sheet['A3'] = 'Hello Python'
+
+wb.save('test.xlsx')
+
+# 在原 excel 被加载的情况下，不能保存覆盖。
+# 一般需要两个 workbook
+# 1. 加载需要处理的 workbook, 只读
+# 2. 创建一个新的 workbook, 处理后的数据存入这个 workbook
+# 关闭 (1) 中的 workbook，保存 (2) 中的 workbook.
+# 如果需要覆盖，使用同一个文件名即可
+
+wb.close()
