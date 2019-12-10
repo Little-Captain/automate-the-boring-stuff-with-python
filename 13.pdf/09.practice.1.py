@@ -13,42 +13,68 @@ import PyPDF2
 import sys
 
 
-def encrypt(pwd):
+def plainPdfList():
+    pdfs = []
     for folderName, subfolders, filenames in os.walk('./pdf'):
         for filename in filenames:
-            # 跳过非 pdf 文件，跳过已加密的文件
             if not filename.endswith('.pdf') or filename.endswith('_encrypted.pdf'):
                 continue
-            tmp = os.path.join(folderName, filename[:-4])
-            oldName = tmp + '.pdf'
-            newName = tmp + '_encrypted.pdf'
-            pdfFileObj = open(oldName, 'rb')
-            pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
-            pdfWriter = PyPDF2.PdfFileWriter()
-            for pageNum in range(pdfReader.numPages):
-                pageObj = pdfReader.getPage(pageNum)
-                pdfWriter.addPage(pageObj)
-            pdfWriter.encrypt(pwd)
-            pdfOutput = open(newName, 'wb')
-            pdfWriter.write(pdfOutput)
-            # 读入的文件对象, 写入的文件对象: 都必须在文件写入完成后才能关闭, 不然会出现问题
-            # 文件打开了，就必须关闭，不管是读还是写
+            pdfs.append(os.path.join(folderName, filename[:-4]))
+    return pdfs
+
+
+def encryptedList():
+    pdfs = []
+    for folderName, subfolders, filenames in os.walk('./pdf'):
+        for filename in filenames:
+            if not filename.endswith('_encrypted.pdf'):
+                continue
+            pdfs.append(os.path.join(folderName, filename[:-4]))
+    return pdfs
+
+
+def encrypt(pwd):
+    for filename in plainPdfList():
+        oldName = filename + '.pdf'
+        newName = filename + '_encrypted.pdf'
+        pdfFileObj = open(oldName, 'rb')
+        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+        pdfWriter = PyPDF2.PdfFileWriter()
+        for pageNum in range(pdfReader.numPages):
+            pageObj = pdfReader.getPage(pageNum)
+            pdfWriter.addPage(pageObj)
+        pdfWriter.encrypt(pwd)
+        pdfOutput = open(newName, 'wb')
+        pdfWriter.write(pdfOutput)
+        # 读入的文件对象, 写入的文件对象: 都必须在文件写入完成后才能关闭, 不然会出现问题
+        # 文件打开了，就必须关闭，不管是读还是写
+        pdfFileObj.close()
+        pdfOutput.close()
+
+
+def canDecrypt(pwd):
+    for filename in encryptedList():
+        fName = filename + '.pdf'
+        pdfFileObj = open(fName, 'rb')
+        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+        if pdfReader.decrypt(pwd) == 0:
+            print('decrypt error %r' % fName)
             pdfFileObj.close()
-            pdfOutput.close()
-
-
-def canDecrypt():
-    pass
+            return False
+        else:
+            pdfFileObj.close()
+    return True
 
 
 def removeUnnecessary():
-    pass
+    for filename in plainPdfList():
+        os.unlink(filename + '.pdf')
 
 
 def main():
     pwd = sys.argv[1]
     encrypt(pwd)
-    if canDecrypt == True:
+    if canDecrypt(pwd) == True:
         removeUnnecessary()
 
 
