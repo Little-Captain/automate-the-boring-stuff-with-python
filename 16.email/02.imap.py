@@ -78,10 +78,13 @@ imapObj.logout()
 # 首先，需要电子邮件服务提供商的 IMAP 服务器域名得到 IMAP 服务器域名后
 # 调用 imapclient.IMAPClient() 函数，创建一个 IMAPClient 对象
 # 大多数电子邮件提供商要求 SSL 加密，传入 SSL=TRUE 关键字参数
+import imaplib
+import pprint
 import imapclient
 import sqlite3
 import os
 import sys
+import pyzmail
 
 imapObj = imapclient.IMAPClient('imap.qq.com', ssl=True)
 
@@ -119,7 +122,6 @@ print(imapObj.login(username, password))
 # 几乎每个账户默认都有一个 INBOX 文件夹，但也可以调用 IMAPClient 对象的
 # list_folders() 方法，获取文件夹列表
 # 这将返回一个元组的列表, 每个元组包含一个文件夹的信息
-import pprint
 
 pprint.pprint(imapObj.list_folders())
 
@@ -151,7 +153,6 @@ print(UIDs)
 # 这个限制是防止 Python 程序消耗太多内存
 # 遗憾的是，默认大小限制往往太小
 # 可以执行下面的代码，将限制从 10000 字节改为 10000000 字节
-import imaplib
 
 imaplib._MAXLINE = 10000000
 
@@ -177,7 +178,60 @@ pprint.pprint(rawMessages)
 # 如果确实希望在获取邮件时将它们标记已读，就需要将 readonly=False 传入 select_folder()
 # 如果所选文件夹已处于只读模式，可以用另一个 select_folder() 调用重新选择当前文件夹
 # 这次用 readonly=False 关键字参数
+# imapObj.select_folder('INBOX', readonly=False)
 
 # 从原始消息中获取电子邮件地址
+# 对于只想读邮件的人来说，fetch() 方法返回的原始消息仍然不太有用
+# pyzmail 模块解析这些原始消息，将它们作为 PyzMessage 对象返回
+# 使邮件的主题、正文、“收件人”字段、“发件人”字段和其他部分能用 Python 代码轻松访问
 
+message = pyzmail.PyzMessage.factory(rawMessages[4668][b'BODY[]'])
+pprint.pprint(message)
+
+# message 中包含一个 PyzMessage 对象，它有几个方法，可以很容易地获得的电子邮件主题行
+# 以及所有发件人和收件人的地址。get_subject() 方法将主题返回为一个简单字符串
+# get_addresses() 方法针对传入的字段，返回一个地址列表
+pprint.pprint(message.get_subject())
+pprint.pprint(message.get_addresses('from'))
+pprint.pprint(message.get_addresses('to'))
+pprint.pprint(message.get_addresses('cc'))
+pprint.pprint(message.get_addresses('bcc'))
+# get_addresses() 的返回值是一个元组列表
+# 每个元组包含两个字符串:
+# 第一个是与该电子邮件地址关联的名称
+# 第二个是电子邮件地址本身
+# 如果请求的字段中没有地址，get_addresses() 返回一个空列表
+
+# 从原始消息中获取正文
+# 电子邮件可以是纯文本、HTML 或两者的混合
+# 纯文本电子邮件只包含文本，而 HTML 电子邮件可以有颜色、字体、图像和其他功能
+# 使得电子邮件看起来像一个小网页。如果电子邮件仅仅是纯文本，它的 PyzMessage 对象会
+# 将 html_part 属性设为 None
+# 如果电子邮件只是 HTML，它的 PyzMessage 对象会将 text_part 属性设为 None
+# 否则，text_part 或 html_part 将有一个 get_payload() 方法，将电子邮件的正文返回
+# 为 bytes 数据类型（bytes 数据类型超出了本书的范围）
+# 但是，这仍然不是我们可以使用的字符串。
+# 最后一步对 get_payload() 返回的 bytes 值调用 decode() 方法
+# decode() 方法接受一个参数: 这条消息的字符编码，保存在 text_part.charset 或
+# html_part.charset 属性中。最后，这返回了邮件正文的字符串
+if message.text_part != None:
+    print(message.text_part.get_payload().decode(message.text_part.charset))
+
+if message.html_part != None:
+    print(message.html_part.get_payload().decode(message.html_part.charset))
+
+# 删除电子邮件
+# 要删除电子邮件，就向 IMAPClient 对象的 delete_messages() 方法传入一个消息 UID 的列表
+# 这为电子邮件加上 \Deleted 标志。调用 expunge() 方法，将永久删除当前选中的文件夹中带
+# \Deleted 标志的所有电子邮件
+# print(imapObj.delete_messages(UIDs[:1]))
+# print(imapObj.expunge())
+
+# 从 IMAP 服务器断开
+# 如果程序已经完成了获取和删除电子邮件，就调用 IMAPClient 的 logout() 方法
+# 从 IMAP 服务器断开连接
 print(imapObj.logout())
+
+# 如果程序运行了几分钟或更长时间，IMAP 服务器可能会超时，或自动断开
+# 接下来程序对 IMAPClient 对象的方法调用会抛出异常
+# 在这种情况下，程序必须调用 imapclient.IMAPClient()，再次连接
